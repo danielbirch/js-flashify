@@ -1,0 +1,26 @@
+{
+  "cards": [
+    {
+      "id": 1,
+      "question": "What is a computed property and how does it work?",
+      "type": "Vue.js"
+    },
+    {
+      "id": 2,
+      "question": "How do you fetch using axios?",
+      "type": "Methods"
+    }
+  ],
+  "history": [
+    {
+      "id": 1,
+      "question": "How are you going?",
+      "type": "Vue.js"
+    },
+    {
+      "id": 2,
+      "question": "This is another item in history",
+      "type": "Vue.js"
+    }
+  ]
+}
