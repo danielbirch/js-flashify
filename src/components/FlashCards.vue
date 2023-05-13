@@ -56,7 +56,10 @@ export default {
     axois.get('http://localhost:3000/cards')
       .then(res => {
         this.cards = res.data
+        this.cards = JSON.parse(JSON.stringify(this.cards))
       })
+    console.log(this.cards)
+    this.randomiseCards()
   },
   components: {},
   methods: {
@@ -68,6 +71,17 @@ export default {
     },
     flipCard(a) {
       this.$refs.cardInner.classList.toggle('is-flipped')
+    },
+    randomiseCards() {
+      const randomCards = cards => {
+        for (let i = cards.length - 1; i > 0; i--) {
+          const randInt = Math.floor(Math.random() * (i + 1))
+          const temp = cards[i]
+          cards[i] = cards[randInt]
+          cards[randInt] = temp
+        }
+      }
+      this.cards = JSON.parse(JSON.stringify(this.cards))
     }
   },
   computed: {
@@ -77,7 +91,7 @@ export default {
       } else {
         return ''
       }
-    }
+    },
   },
   props: []
 }
