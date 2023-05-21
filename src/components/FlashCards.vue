@@ -58,7 +58,7 @@ export default {
         this.cards = res.data
         this.cards = JSON.parse(JSON.stringify(this.cards))
       })
-    console.log(this.cards)
+    console.log(this.cards) // why is this an empty proxy array?
     this.randomiseCards()
   },
   components: {},
@@ -70,7 +70,9 @@ export default {
       console.log('NEXT')
     },
     flipCard(a) {
-      this.$refs.cardInner.classList.toggle('is-flipped')
+      this.$refs.cardInner.forEach((item) => {
+        item.classList.toggle("is-flipped");
+      })
     },
     randomiseCards() {
       const randomCards = cards => {
@@ -78,18 +80,20 @@ export default {
           const randInt = Math.floor(Math.random() * (i + 1))
           const temp = cards[i]
           cards[i] = cards[randInt]
-          cards[randInt] = temp
+          // cards[randInt] = temp
+          cards[randInt].push(temp) // Trying to use push but this.cards is still an empty array
         }
       }
       this.cards = JSON.parse(JSON.stringify(this.cards))
+      console.log(this.cards)
     }
   },
   computed: {
     firstQuestion() {
-      if (this.cards.length > 0) {
-        return this.cards[0].question
+      if (this.cards[0] === this.cards[0]) { // If the card has the index of 0
+        return this.cards[0].question // Show the question for card 0
       } else {
-        return ''
+        return '' // Else show the random card generated above
       }
     },
   },
