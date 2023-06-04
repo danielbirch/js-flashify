@@ -3,27 +3,52 @@
     {
       "id": 1,
       "question": "What is a computed property and how does it work?",
-      "type": "Vue.js"
+      "answer": "I'm not sure yet.",
+      "answerImage": "https://i0.wp.com/theperfectroundgolf.com/wp-content/uploads/2022/04/placeholder.png",
+      "primary": "vue",
+      "secondary": "vue-secondary",
+      "text": "light",
+      "technology": "Vue.js"
     },
     {
       "id": 2,
       "question": "How do you fetch using axios?",
-      "type": "Methods"
+      "answer": "Still checking...",
+      "answerImage": "https://i0.wp.com/theperfectroundgolf.com/wp-content/uploads/2022/04/placeholder.png",
+      "primary": "methods",
+      "secondary": "methods-secondary",
+      "text": "dark",
+      "technology": "Methods"
     },
     {
       "id": 3,
       "question": "gsdfgewrfsdfvgwerqfefw",
-      "type": "Methods"
+      "answer": "Working on this.",
+      "answerImage": "https://i0.wp.com/theperfectroundgolf.com/wp-content/uploads/2022/04/placeholder.png",
+      "primary": "functions",
+      "secondary": "functions-secondary",
+      "text": "dark",
+      "technology": "Functions"
     },
     {
       "id": 4,
       "question": "wqerw",
-      "type": "Methods"
+      "answer": "Hmm.",
+      "answerImage": "https://i0.wp.com/theperfectroundgolf.com/wp-content/uploads/2022/04/placeholder.png",
+      "primary": "fundamentals",
+      "secondary": "fundamentals-secondary",
+      "text": "dark",
+      "technology": "Fundamentals"
     },
     {
       "id": 5,
       "question": "fasdgsfgsdg",
-      "type": "Methods"
+      "answer": "Interesting.",
+      "answerImage": "https://i0.wp.com/theperfectroundgolf.com/wp-content/uploads/2022/04/placeholder.png",
+      "primary": "objects",
+      "secondary": "objects-secondary",
+      "text": "dark",
+      "technology": "Objects"
     }
   ],
   "history": [

@@ -6,12 +6,12 @@
 				<i class="fa-solid fa-chevron-left"></i>
 			</div>
 			<div class="card-container">
-				<div class="card" v-for="card in cards" :key="card.id">
+				<div class="card" v-if="currentCard !== null">
 					<div class="card-inner" ref="cardInner" @click="flipCard">
-						<div class="card-face card-face-front">
-							<div class="card-category">Vue.js</div>
-							<div class="card-title">
-								<span>{{ card.question }}</span>
+						<div class="card-face card-face-front" :style="{ background: `var(--${cards[currentCard].primary})`}">
+							<div class="card-category" :style="{ background: `var(--${cards[currentCard].secondary})`}">{{ cards[currentCard].technology }}</div>
+							<div class="card-title" :style="{ color: `var(--${cards[currentCard].text})` }">
+								<span>{{ cards[currentCard].question }}</span>
 							</div>
 							<div class="flip-prompt">
 								<i class="fa-solid fa-rotate"></i>
@@ -19,10 +19,10 @@
 							</div>
 						</div>
 						<div class="card-face card-face-back">
-							<div class="card-category">Vue.js</div>
+							<div class="card-category" :style="{ background: `var(--${cards[currentCard].secondary})`}"> {{ cards[currentCard].technology }}</div>
 							<div class="card-answer">
-								This is the answer to the question.
-								<img src="#" alt="" v-if="true" style="width: 300px; height: auto; margin-top: 20px;"/>
+								{{ cards[currentCard].answer }}
+								<img :src="cards[currentCard].answerImage" alt="" v-if="true" style="width: 100%; height: auto; margin-top: 20px;"/>
 							</div>
 							<div class="flip-prompt">
 								<i class="fa-solid fa-rotate"></i>
@@ -46,26 +46,20 @@ export default {
 	data() {
 		return {
 			cards: [],
+			currentCard: null,
 		};
 	},
 	mounted() {
 		axois.get("http://localhost:3000/cards").then((res) => {
 			this.cards = res.data;
 			this.randomiseCards(this.cards);
+			this.currentCard = 0;
 		});
 	},
 	components: {},
 	methods: {
-		handlePrevious() {
-			console.log("PREV");
-		},
-		handleNext() {
-			console.log("NEXT");
-		},
 		flipCard(a) {
-			this.$refs.cardInner.forEach((item) => {
-				item.classList.toggle("is-flipped");
-			});
+			this.$refs.cardInner.classList.toggle("is-flipped");
 		},
 		randomiseCards(cards) {
 			// Get number of items in array, minus 1 to keep it within range
@@ -73,8 +67,7 @@ export default {
 			// Math random, multiplied by number of items in array
 			const random = Math.floor(Math.random() * cardsLength);
 			// For each array item, switch with item equal to half of the math random
-      const switchWith = Math.round(random / 2);
-      console.log(switchWith)
+			const switchWith = Math.round(random / 2);
 
 			cards.forEach((card) => {
 				if (cards.length >= 3) {
@@ -94,8 +87,30 @@ export default {
 					);
 				}
 			});
-
-			console.log(cards);
+		},
+		handleNext() {
+			if (this.currentCard < this.cards.length - 1) {
+				if (this.$refs.cardInner.classList.contains("is-flipped")) {
+					this.flipCard()
+					setTimeout(() => {
+						this.currentCard++
+					}, 900)
+				} else {
+					this.currentCard++
+				}
+			}
+		},
+		handlePrevious() {
+			if (this.currentCard < this.cards.length && this.currentCard !== 0) {
+				if (this.$refs.cardInner.classList.contains("is-flipped")) {
+					this.flipCard()
+					setTimeout(() => {
+						this.currentCard--
+					}, 900)
+				} else {
+					this.currentCard--
+				}
+			}
 		},
 	},
 	computed: {},
@@ -106,15 +121,17 @@ export default {
 <style>
 :root {
 	--vue: #42b883;
-	--vue-text: #35495e;
-	--fundamentals: #f7df1e;
-	--fundamentals-text: #f7df1e;
-	--methods: #ffffff;
-	--methods-text: #1a1a1a;
-	--objects: #bababa;
-	--objects-text: #bababa;
-	--functions: #a4a4a4;
-	--functions-text: #a4a4a4;
+	--vue-secondary: #35495e;
+	--fundamentals: #f0db4f;
+	--fundamentals-secondary: #1a1a1a;
+	--methods: #f0db4f;
+	--methods-secondary: #1a1a1a;
+	--objects: #f0db4f;
+	--objects-secondary: #1a1a1a;
+	--functions: #f0db4f;
+	--functions-secondary: #1a1a1a;
+	--dark: #1a1a1a;
+	--light: #ffffff;
 }
 
 .container-main {
@@ -160,7 +177,7 @@ export default {
 
 .prev-card:hover,
 .next-card:hover {
-	background: #f0db4f;
+	background: var(--fundamentals);
 	color: white;
 	cursor: pointer;
 }
@@ -172,8 +189,8 @@ export default {
 }
 
 .card {
-	width: 350px;
-	height: 450px;
+	width: 420px;
+	height: 520px;
 	perspective: 1000px;
 }
 
@@ -203,7 +220,7 @@ export default {
 }
 
 .card-face-front {
-	background: var(--vue);
+	background: var(--card-face-front);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -212,7 +229,7 @@ export default {
 
 .card-face-back {
 	transform: rotateY(180deg);
-	background: var(--methods);
+	background: var(--card-face-back);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -229,7 +246,7 @@ export default {
 	padding: 15px 30px;
 	position: absolute;
 	top: 0;
-	background: var(--vue-text);
+	background: var(--card-category);
 	border-bottom-left-radius: 6px;
 	border-bottom-right-radius: 6px;
 }
@@ -239,7 +256,10 @@ export default {
 	font-family: "Special Elite", Arial, Helvetica, sans-serif;
 	font-size: 30px;
 	line-height: 1.4em;
-	padding: 20px;
+	width: 80%;
+  justify-content: center;
+  display: flex;
+  word-break: break-word;
 }
 
 .card-answer {
@@ -247,8 +267,9 @@ export default {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	color: var(--vue-text);
+	color: var(--dark);
 	padding: 20px;
+	word-break: break-word;
 }
 
 .flip-prompt {
@@ -257,7 +278,7 @@ export default {
 	position: absolute;
 	bottom: 0;
 	padding: 20px;
-	color: var(--vue-text);
+	color: var(--dark);
 	font-size: 14px;
 	font-weight: 700;
 }
