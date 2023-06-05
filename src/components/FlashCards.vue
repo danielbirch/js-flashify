@@ -43,6 +43,7 @@
 // import axois from "axios";
 import { db } from "../firebase/config.js";
 import { query, collection, getDocs } from 'firebase/firestore';
+import gsap from 'gsap'
 
 export default {
 	data() {
@@ -104,11 +105,35 @@ export default {
 			if (this.currentCard < this.cards.length - 1) {
 				if (this.$refs.cardInner.classList.contains("is-flipped")) {
 					this.flipCard()
+					// Is flipped, moving off screen (to left)
+					setTimeout(() => {
+						gsap.fromTo(
+						".card", { rotation: 0, x: 0, duration: 0.8 },
+						{rotation: 360, x: -1000, duration: 0.8, ease: "power2.inOut"}
+						)
+					}, 800)
+					// Is flipped, moving on screen (to right)
 					setTimeout(() => {
 						this.currentCard++
-					}, 900)
+						gsap.fromTo(
+						".card", { rotation: 0, x: 1000, duration: 0.8 },
+						{rotation: 360, x: 0, duration: 0.8, ease: "power2.inOut"}
+						)
+					}, 1500);
 				} else {
-					this.currentCard++
+					// Is not flipped, moving off screen (to left)
+					gsap.fromTo(
+						".card", { rotation: 0, x: 0, duration: 0.8 },
+						{rotation: 360, x: -1000, duration: 0.8, ease: "power2.inOut"}
+					)
+					// Is not flipped, moving on screen (to left)
+					setTimeout(() => {
+						this.currentCard++
+						gsap.fromTo(
+						".card", { rotation: 0, x: 1000, duration: 0.8 },
+						{rotation: 360, x: 0, duration: 0.8, ease: "power2.inOut"}
+						)
+					}, 900)
 				}
 			}
 		},
@@ -116,11 +141,35 @@ export default {
 			if (this.currentCard < this.cards.length && this.currentCard !== 0) {
 				if (this.$refs.cardInner.classList.contains("is-flipped")) {
 					this.flipCard()
+					// Is flipped, moving off screen (to right)
+					setTimeout(() => {
+						gsap.fromTo(
+						".card", { rotation: 0, x: 0, duration: 0.8 },
+						{rotation: 360, x: 1000, duration: 0.8, ease: "power2.inOut"}
+						)
+					}, 900)
+					// Is flipped, moving on screen (to left)
 					setTimeout(() => {
 						this.currentCard--
-					}, 900)
+						gsap.fromTo(
+						".card", { rotation: 0, x: -1000, duration: 0.8 },
+						{rotation: 360, x: 0, duration: 0.8, ease: "power2.inOut"}
+						)
+					}, 1500);
 				} else {
-					this.currentCard--
+					// Is not flipped, moving off screen (to right)
+					gsap.fromTo(
+						".card", { rotation: 0, x: 0, duration: 0.8 },
+						{rotation: 360, x: 1000, duration: 0.8, ease: "power2.inOut"}
+					)
+					// Is not flipped, moving on screen (to right)
+					setTimeout(() => {
+						this.currentCard--
+						gsap.fromTo(
+						".card", { rotation: 0, x: -1000, duration: 0.8 },
+						{rotation: 360, x: 0, duration: 0.8, ease: "power2.inOut"}
+						)
+					}, 900);
 				}
 			}
 		},
@@ -204,6 +253,7 @@ export default {
 	width: 420px;
 	height: 520px;
 	perspective: 1000px;
+	position: relative;
 }
 
 .card-inner {
