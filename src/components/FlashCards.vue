@@ -40,7 +40,9 @@
 
 <script>
 // IMPORTS
-import axois from "axios";
+// import axois from "axios";
+import { db } from "../firebase/config.js";
+import { query, collection, getDocs } from 'firebase/firestore';
 
 export default {
 	data() {
@@ -49,15 +51,25 @@ export default {
 			currentCard: null,
 		};
 	},
+	created() {
+		this.getCards()
+	},
 	mounted() {
-		axois.get("http://localhost:3000/cards").then((res) => {
-			this.cards = res.data;
-			this.randomiseCards(this.cards);
-			this.currentCard = 0;
-		});
+		// axois.get("http://localhost:3000/cards").then((res) => {
+		// 	this.cards = res.data;
+		// 	this.randomiseCards(this.cards);
+		// 	this.currentCard = 0;
+		// });
 	},
 	components: {},
 	methods: {
+		async getCards() {
+			const querySnap = await getDocs(query(collection(db, 'cards')))
+			this.cards = querySnap.docs.map(doc => doc.data())
+				this.randomiseCards(this.cards);
+				this.currentCard = 0;
+			console.log(this.cards)
+		},
 		flipCard(a) {
 			this.$refs.cardInner.classList.toggle("is-flipped");
 		},
