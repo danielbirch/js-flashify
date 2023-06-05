@@ -241,7 +241,7 @@ export default {
 
 .card-face-back {
 	transform: rotateY(180deg);
-	background: var(--card-face-back);
+	background: white;
 	display: flex;
 	justify-content: center;
 	align-items: center;
