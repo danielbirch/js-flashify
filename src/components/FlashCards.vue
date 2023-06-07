@@ -24,8 +24,9 @@
 								{{ cards[currentCard].answer }}
 								<img :src="cards[currentCard].answerImage" alt="" v-if="true" style="width: 100%; height: auto; margin-top: 20px;"/>
 							</div>
-							<div class="flip-prompt">
-								<i class="fa-solid fa-rotate"></i>
+							<div class="answer-prompt">
+								<div class="wrong" @click="handleAnswer($event, cards[currentCard].id)"><i class="fa-solid fa-xmark"></i></div>
+								<div class="correct" @click="handleAnswer($event, cards[currentCard].id)"><i class="fa-solid fa-check"></i></div>
 							</div>
 						</div>
 					</div>
@@ -42,14 +43,15 @@
 // IMPORTS
 // import axois from "axios";
 import { db } from "../firebase/config.js";
-import { query, collection, getDocs } from 'firebase/firestore';
-import gsap from 'gsap'
+import { query, collection, doc, getDocs, addDoc, setDoc } from 'firebase/firestore';
+import gsap from 'gsap';
 
 export default {
 	data() {
 		return {
 			cards: [],
 			currentCard: null,
+			// currentCardFirestoreId:
 		};
 	},
 	created() {
@@ -69,7 +71,6 @@ export default {
 			this.cards = querySnap.docs.map(doc => doc.data())
 				this.randomiseCards(this.cards);
 				this.currentCard = 0;
-			console.log(this.cards)
 		},
 		flipCard(a) {
 			this.$refs.cardInner.classList.toggle("is-flipped");
@@ -109,31 +110,31 @@ export default {
 					setTimeout(() => {
 						gsap.fromTo(
 						".card", { rotation: 0, x: 0, duration: 0.8 },
-						{rotation: 360, x: -1000, duration: 0.8, ease: "power2.inOut"}
+						{rotation: 360, x: -window.innerWidth / 1.1, duration: 0.8, ease: "power2.inOut"} // -1000
 						)
 					}, 800)
 					// Is flipped, moving on screen (to right)
 					setTimeout(() => {
 						this.currentCard++
 						gsap.fromTo(
-						".card", { rotation: 0, x: 1000, duration: 0.8 },
-						{rotation: 360, x: 0, duration: 0.8, ease: "power2.inOut"}
+						".card", { rotation: 0, x: window.innerWidth / 1.1, duration: 1 }, // 1000
+						{rotation: 360, x: 0, duration: 1, ease: "power2.inOut"}
 						)
-					}, 1500);
+					}, 1400);
 				} else {
 					// Is not flipped, moving off screen (to left)
 					gsap.fromTo(
 						".card", { rotation: 0, x: 0, duration: 0.8 },
-						{rotation: 360, x: -1000, duration: 0.8, ease: "power2.inOut"}
+						{rotation: 360, x: -window.innerWidth / 1.1, duration: 0.8, ease: "power2.inOut"} // -1000
 					)
 					// Is not flipped, moving on screen (to left)
 					setTimeout(() => {
 						this.currentCard++
 						gsap.fromTo(
-						".card", { rotation: 0, x: 1000, duration: 0.8 },
-						{rotation: 360, x: 0, duration: 0.8, ease: "power2.inOut"}
+						".card", { rotation: 0, x: window.innerWidth / 1.1, duration: 1 }, // 1000
+						{rotation: 360, x: 0, duration: 1, ease: "power2.inOut"}
 						)
-					}, 900)
+					}, 800)
 				}
 			}
 		},
@@ -145,32 +146,46 @@ export default {
 					setTimeout(() => {
 						gsap.fromTo(
 						".card", { rotation: 0, x: 0, duration: 0.8 },
-						{rotation: 360, x: 1000, duration: 0.8, ease: "power2.inOut"}
+						{rotation: 360, x: window.innerWidth / 1.1, duration: 0.8, ease: "power2.inOut"} // 1000
 						)
-					}, 900)
+					}, 800)
 					// Is flipped, moving on screen (to left)
 					setTimeout(() => {
 						this.currentCard--
 						gsap.fromTo(
-						".card", { rotation: 0, x: -1000, duration: 0.8 },
-						{rotation: 360, x: 0, duration: 0.8, ease: "power2.inOut"}
+						".card", { rotation: 0, x: -window.innerWidth / 1.1, duration: 1 }, // -1000
+						{rotation: 360, x: 0, duration: 1, ease: "power2.inOut"}
 						)
-					}, 1500);
+					}, 1400);
 				} else {
 					// Is not flipped, moving off screen (to right)
 					gsap.fromTo(
 						".card", { rotation: 0, x: 0, duration: 0.8 },
-						{rotation: 360, x: 1000, duration: 0.8, ease: "power2.inOut"}
+						{rotation: 360, x: window.innerWidth / 1.1, duration: 0.8, ease: "power2.inOut"} // 1000
 					)
 					// Is not flipped, moving on screen (to right)
 					setTimeout(() => {
 						this.currentCard--
 						gsap.fromTo(
-						".card", { rotation: 0, x: -1000, duration: 0.8 },
-						{rotation: 360, x: 0, duration: 0.8, ease: "power2.inOut"}
+						".card", { rotation: 0, x: -window.innerWidth / 1.1, duration: 1 }, // -1000
+						{rotation: 360, x: 0, duration: 1, ease: "power2.inOut"}
 						)
-					}, 900);
+					}, 800);
 				}
+			}
+		},
+		async updateWrong(docReference) {
+			await setDoc(doc(db, 'cards', 'PSs7Zm3Fdux5V4ROreGR'), { userAnswer: 'wrong' }, { merge: true })
+		},
+		handleAnswer(event, docReference) {
+			console.log(docReference) // output: 2, solution: match document id with docReference
+			// srcElement
+			if (event.target.classList.contains('wrong')) {
+				// Update firestore answer key for the card to wrong
+				this.updateWrong(docReference)
+			} else {
+				// console.log(e.srcElement.classList)
+				// Update firestore answer key for the card to correct
 			}
 		},
 	},
@@ -348,5 +363,34 @@ export default {
 .flip-prompt i {
 	font-size: 25px;
 	padding-bottom: 10px;
+}
+
+.answer-prompt {
+	display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: end;
+  width: 100%;
+	position: absolute;
+	bottom: 0;
+}
+
+.wrong, .correct {
+	width: 100%;
+	padding: 10px;
+	color: white;
+	font-size: 30px;
+}
+
+.wrong {
+	background: #F84F31;
+}
+
+.correct {
+	background: #23C552;
+}
+
+.fa-solid.fa-xmark, .fa-solid.fa-check {
+	pointer-events: none;
 }
 </style>
