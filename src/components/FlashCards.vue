@@ -25,8 +25,8 @@
 								<img :src="cards[currentCard].answerImage" alt="" v-if="true" style="width: 100%; height: auto; margin-top: 20px;"/>
 							</div>
 							<div class="answer-prompt">
-								<div class="wrong" @click="handleAnswer($event, cards[currentCard].id)"><i class="fa-solid fa-xmark"></i></div>
-								<div class="correct" @click="handleAnswer($event, cards[currentCard].id)"><i class="fa-solid fa-check"></i></div>
+								<div :id="cards[currentCard].ref.id" class="wrong" @click="handleAnswer($event, cards[currentCard].ref.id)"><i class="fa-solid fa-xmark"></i></div>
+								<div :id="cards[currentCard].ref.id" class="correct" @click="handleAnswer($event, cards[currentCard].ref.id)"><i class="fa-solid fa-check"></i></div>
 							</div>
 						</div>
 					</div>
@@ -51,7 +51,7 @@ export default {
 		return {
 			cards: [],
 			currentCard: null,
-			// currentCardFirestoreId:
+			querySnap: null,
 		};
 	},
 	created() {
@@ -67,10 +67,10 @@ export default {
 	components: {},
 	methods: {
 		async getCards() {
-			const querySnap = await getDocs(query(collection(db, 'cards')))
-			this.cards = querySnap.docs.map(doc => doc.data())
-				this.randomiseCards(this.cards);
-				this.currentCard = 0;
+			this.querySnap = await getDocs(query(collection(db, 'cards')))
+			this.cards = this.querySnap.docs.map(doc => ({ ...doc.data(), ref: doc.ref }));
+			this.randomiseCards(this.cards);
+			this.currentCard = 0;
 		},
 		flipCard(a) {
 			this.$refs.cardInner.classList.toggle("is-flipped");
@@ -174,19 +174,20 @@ export default {
 				}
 			}
 		},
-		async updateWrong(docReference) {
-			await setDoc(doc(db, 'cards', 'PSs7Zm3Fdux5V4ROreGR'), { userAnswer: 'wrong' }, { merge: true })
-		},
 		handleAnswer(event, docReference) {
-			console.log(docReference) // output: 2, solution: match document id with docReference
-			// srcElement
 			if (event.target.classList.contains('wrong')) {
-				// Update firestore answer key for the card to wrong
+				// Update firestore answer to wrong
 				this.updateWrong(docReference)
 			} else {
-				// console.log(e.srcElement.classList)
-				// Update firestore answer key for the card to correct
+				// Update firestore answer to correct
+				this.updateCorrect(docReference)
 			}
+		},
+		async updateWrong(docReference) {
+			await setDoc(doc(db, 'cards', docReference), { userAnswer: 'wrong' }, { merge: true })
+		},
+		async updateCorrect(docReference) {
+			await setDoc(doc(db, 'cards', docReference), { userAnswer: 'correct' }, { merge: true })
 		},
 	},
 	computed: {},
@@ -208,6 +209,10 @@ export default {
 	--functions-secondary: #1a1a1a;
 	--dark: #1a1a1a;
 	--light: #ffffff;
+}
+
+.inactive {
+	opacity: 0.2;
 }
 
 .container-main {
