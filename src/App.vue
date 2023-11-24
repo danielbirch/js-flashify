@@ -11,6 +11,7 @@ import Footer from './components/Footer.vue'
 import FlashCards from './components/FlashCards.vue'
 import History from './components/History.vue'
 
+
 export default {
   name: 'App',
   data() {

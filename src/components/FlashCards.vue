@@ -45,6 +45,8 @@
 import { db } from "../firebase/config.js";
 import { query, collection, doc, getDocs, addDoc, setDoc } from 'firebase/firestore';
 import gsap from 'gsap';
+// import { getCards } from '../firebase/store'
+
 
 export default {
 	data() {
@@ -55,7 +57,7 @@ export default {
 		};
 	},
 	created() {
-		this.getCards()
+		this.getCards() //this.
 	},
 	mounted() {
 		// axois.get("http://localhost:3000/cards").then((res) => {
@@ -72,6 +74,11 @@ export default {
 			this.randomiseCards(this.cards);
 			this.currentCard = 0;
 		},
+		// handleGetCards() {
+		// 	getCards()
+		// 	this.randomiseCards(this.cards);
+		// 	this.currentCard = 0;
+		// },
 		flipCard(a) {
 			this.$refs.cardInner.classList.toggle("is-flipped");
 		},
